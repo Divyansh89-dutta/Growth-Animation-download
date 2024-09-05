@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .growth {
+            transition: width 0.04s linear, background-color 0.5s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+
+        .confetti {
+            position: fixed;
+            top: -10px;
+            width: 10px;
+            height: 20px;
+            background-color: #ff0;
+            animation: confetti 3s linear infinite;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="flex bg-gray-500 justify-center items-center h-screen font-sans">
+    <div class="container border-3 rounded-[20px] p-10 bg-red-400 text-center w-4/5 max-w-lg">
+        <div class="box p-5 mb-5">
+            <h1 class="text-4xl font-semibold text-gray-700">0%</h1>
+        </div>
+        <div class="mb-5 space-x-4">
+            <button id="startBtn" class="px-5 py-2 bg-blue-500 text-white rounded-[10px] font-semibold hover:bg-blue-700 transition ease-in-out duration-300">Start</button>
+        </div>
+        <div class="growth-container w-full h-8 bg-gray-300 rounded-full overflow-hidden shadow-inner">
+            <div class="growth h-full bg-teal-400" style="width: 0;"></div>
+        </div>
+        <p id="completionMessage" class="text-2xl font-semibold text-gray-700 mt-5 hidden">Completed!</p>
+    </div>
+
+    <script>
+        var startBtn = document.getElementById("startBtn");
+        var timer = document.querySelector("h1");
+        var growth = document.querySelector(".growth");
+        var completionMessage = document.getElementById("completionMessage");
+        var grow = 0;
+        var interval;
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                let confetti = document.createElement("div");
+                confetti.classList.add("confetti");
+                confetti.style.left = Math.random() * 100 + "vw";
+                confetti.style.backgroundColor = "hsl(" + Math.random() * 360 + ", 100%, 50%)";
+                document.body.appendChild(confetti);
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        startBtn.addEventListener("click", function() {
+            if (interval) return; // Prevent multiple intervals
+            completionMessage.classList.add("hidden");
+            interval = setInterval(function() {
+                grow++;
+                timer.innerHTML = grow + "%";
+                growth.style.width = grow + "%";
+                if (grow >= 100) {
+                    clearInterval(interval);
+                    growth.classList.add("pulse-animation");
+                    completionMessage.classList.remove("hidden");
+                    createConfetti();
+                }
+            }, 40);
+        });
+    </script>
+</body>
+</html>
